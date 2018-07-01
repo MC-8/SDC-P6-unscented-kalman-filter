@@ -6,8 +6,6 @@ Self-Driving Car Engineer Nanodegree Program
 [NIS_LASER]:   ./NIS_laser.png
 [NIS_RADAR]:   ./NIS_radar.png
 
-Self-Driving Car Engineer Nanodegree Program
-
 In this project I implemented an Unscented Kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements.
 The tracked object is a bicycle and the assumption is that the object moves with constant turn rate and velocity magnitude (CTRV). This is a step forward the standard Kalman filter and the Extended Kalman filter because it directly uses nonlinear equations without the need to linearize the process model, as long as the assumption is reasonable.
 The Unscented Kalman filter makes use of "Sigma points" to solve the nonlinear prediction problem approximating the distribution to a normal one.
