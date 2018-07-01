@@ -1,92 +1,47 @@
 # Unscented Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
-In this project utilize an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+[//]: # (Image References)
+[result]:   ./simimage.png
+[NIS_LASER]:   ./NIS_laser.png
+[NIS_RADAR]:   ./NIS_radar.png
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
+Self-Driving Car Engineer Nanodegree Program
 
-This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
+In this project I implemented an Unscented Kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements.
+The tracked object is a bicycle and the assumption is that the object moves with constant turn rate and velocity magnitude (CTRV). This is a step forward the standard Kalman filter and the Extended Kalman filter because it directly uses nonlinear equations without the need to linearize the process model, as long as the assumption is reasonable.
+The Unscented Kalman filter makes use of "Sigma points" to solve the nonlinear prediction problem approximating the distribution to a normal one.
 
-Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
+This project utilizes the Udacity Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases).
 
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./UnscentedKF
+Data from both sensors (radar and lidar) is fused to improve the estimation accuracy of a moving object subject to noisy measurements and uncertain trajectory.
 
-Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
+The Unscented Kalman filter steps are:
+1) Generate Sigma Points;
+2) Predict Sigma Points;
+3) Predict Mean and Covariance;
 
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, src/ukf.h, tools.cpp, and tools.h
+and for each measurement received (radar and laser):
+4) Predict measurement; (Uses non-linear model)
+5) Update state.
 
-The program main.cpp has already been filled out, but feel free to modify it.
+The result of the prediction can be seen in the following image:
+![alt text][result]
 
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
+Blue and red dot are measurements from lidar and radar, while the green dots are the estimated position of the object (represented by the car), as detected by the sensors placed at the origin.
+The image also shows the RMSE of position and velocity.
+
+As part of the project I had to chose reasonable values for the linear and yaw rate accelerations, so that the noises would be realistic. I've chosen a process noise standard deviation for the longitudinal acceleration in m/s^2 = 2; and a process noise standard deviation phi acceleration in rad/s^2 = 0.3.
+A practical way to assess if the values are reasonable is to verify the the measurements follow a chi-square distribution with 2 and 3 degrees of freedom for laser (degrees of freedom are position x and y) and radar (degrees of freedom are distance, angle and longitudinal velocity), respectively.
+If the noise is realistic, we expect 95% of the values within a 95% threshold of the chi-square distribution, which values are 7.815 and 5.991 for 3 and 2 degrees of freedom respectively.
+The chose noise values seem reasonable, as shown in the following pictures (most of the values are within the 95% threshold).
+Laser
+![alt text][NIS_LASER]
+Radar
+![alt text][NIS_RADAR]
 
 
-INPUT: values provided by the simulator to the c++ program
-
-["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
 
 
-OUTPUT: values provided by the c++ program to the simulator
-
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
-
----
-
-## Other Important Dependencies
-* cmake >= 3.5
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-
-## Basic Build Instructions
-
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./UnscentedKF` Previous versions use i/o from text files.  The current state uses i/o
-from the simulator.
-
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
-
-## Project Instructions and Rubric
-
-This information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/c3eb3583-17b2-4d83-abf7-d852ae1b9fff/concepts/f437b8b0-f2d8-43b0-9662-72ac4e4029c1)
-for instructions and the project rubric.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
+The code is based on the [Udacity repository](https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project).
+The repository contains further details on how to setup the development and build environment.

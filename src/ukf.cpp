@@ -27,10 +27,10 @@ UKF::UKF()
   // initial covariance matrix
   P_ = MatrixXd(5, 5);
 
-  // Prhocess noise standard deviation longitudinal acceleration in m/s^2
+  // Process noise standard deviation longitudinal acceleration in m/s^2
   std_a_ = 2;
 
-  // Prhocess noise standard deviation phi acceleration in rad/s^2
+  // Process noise standard deviation phi acceleration in rad/s^2
   std_yawdd_ = 0.3;
 
   // Laser measurement noise standard deviation position1 in m
@@ -50,11 +50,11 @@ UKF::UKF()
 
   /**
   TODO:
-  Complete the initialization. See ukf.h for other member prhoperties.
+  Complete the initialization. See ukf.h for other member properties.
   Hint: one or more values initialized above might be wildly off...
   */
 
-  // initially set to false, set to true in first call of PrhocessMeasurement
+  // initially set to false, set to true in first call of ProcessMeasurement
   is_initialized_ = false;
 
   // time when the state is true, in us
@@ -124,7 +124,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package)
       TODO:
       * Initialize the state x_ with the first measurement.
       * Create the covariance matrix.
-      * Remember: you'll need to convert radar frhom polar to cartesian coordinates.
+      * Remember: you'll need to convert radar from polar to cartesian coordinates.
       */
       /**
       Initialize state.
@@ -199,7 +199,7 @@ void UKF::Prediction(double delta_t)
   //create sigma point matrix
   MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
 
-  //calculate square rhoot of P
+  //calculate square root of P
   MatrixXd P_sqrt = P_.llt().matrixL();
 
   //set lambda for non-augmented sigma points
@@ -382,13 +382,13 @@ void UKF::UpdateLidar(MeasurementPackage meas_package)
       0, std_laspy_ * std_laspy_;
   S = S + R;
 
-  //create matrix for crhoss correlation Tc
+  //create matrix for cross correlation Tc
   MatrixXd Tc = MatrixXd(n_x_, n_z);
 
   /*****************************************************************************
   *  UKF Update for Lidar
   ****************************************************************************/
-  //calculate crhoss correlation matrix
+  //calculate cross correlation matrix
   Tc.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   { //2n+1 simga points
@@ -489,13 +489,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package)
       0, 0, std_radrd_ * std_radrd_;
   S = S + R;
 
-  //create matrix for crhoss correlation Tc
+  //create matrix for cross correlation Tc
   MatrixXd Tc = MatrixXd(n_x_, n_z);
 
   /*****************************************************************************
   *  UKF Update for Radar
   ****************************************************************************/
-  //calculate crhoss correlation matrix
+  //calculate cross correlation matrix
   Tc.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   { //2n+1 simga points
