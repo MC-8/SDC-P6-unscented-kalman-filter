@@ -33,8 +33,10 @@ As part of the project I had to chose reasonable values for the linear and yaw r
 A practical way to assess if the values are reasonable is to verify the the measurements follow a chi-square distribution with 2 and 3 degrees of freedom for laser (degrees of freedom are position x and y) and radar (degrees of freedom are distance, angle and longitudinal velocity), respectively.
 If the noise is realistic, we expect 95% of the values within a 95% threshold of the chi-square distribution, which values are 7.815 and 5.991 for 3 and 2 degrees of freedom respectively.
 The chose noise values seem reasonable, as shown in the following pictures (most of the values are within the 95% threshold).
+
 Laser
 ![alt text][NIS_LASER]
+
 Radar
 ![alt text][NIS_RADAR]
 
